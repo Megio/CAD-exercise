@@ -1,9 +1,10 @@
 #start-drawing-btn {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  height: 40px;
-  width: 200px;
+  bottom: 20px;
+  left: calc(50vw - 200px);
+  height: 80px;
+  width: 400px;
+  font-size: 40px;
   z-index: 1;
 }
 
@@ -29,18 +30,21 @@ p {
 #wall-height {
   position: absolute;
   top: 20px;
-  right: 220px;
-  height: 40px;
-  width: 200px;
+  left: calc(50vw - 200px);
+  height: 80px;
+  width: 400px;
   padding: 0 24px;
   outline: none;
+  box-sizing: border-box;
+  font-size: 40px;
   border-radius: 10px;
 }
 
 #submit-wall-height {
   position: absolute;
-  top: 20px;
-  right: 10px;
-  height: 46px;
-  width: 200px;
+  top: 120px;
+  left: calc(50vw - 200px);
+  height: 80px;
+  width: 400px;
+  font-size: 40px;
 }

@@ -56,11 +56,9 @@ function onMouseDown(event) {
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects(objects);
     if (intersects.length > 0) {
-      console.log(controlPoints)
       controlPoints[clickCount] = intersects[0].point.clone();
-      var cp = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 12), new THREE.MeshBasicMaterial({ color: "tomato" }));
+      var cp = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 12), new THREE.MeshBasicMaterial({ color: "tomato" }));
       cp.position.copy(intersects[0].point);
-      console.log(cp)
       scene.add(cp);
       if (clickCount >= 1) {
         var material = new THREE.LineBasicMaterial({ color: 'tomato', linewidth: 100 });
@@ -82,27 +80,21 @@ function render() {
 }
 
 document.getElementById('start-drawing-btn').addEventListener('click', () => {
-  console.log('Start drawing!');
-  drawingEnabled = true;
-  let paragraph = document.createElement('p');
-  paragraph.innerHTML = 'Please click ESCAPE to stop drawing';
-  document.body.appendChild(paragraph);
-});
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-    drawingEnabled = false;
-    let paragraph = document.querySelector('p');
-    paragraph.parentNode.removeChild(paragraph);
+  drawingEnabled = !drawingEnabled;
+  if (!drawingEnabled && controlPoints.length > 2) {
     var material = new THREE.LineBasicMaterial({ color: 'red', linewidth: 100 });
     var geometry = new THREE.BufferGeometry();
     geometry.setFromPoints([controlPoints[clickCount - 1], controlPoints[0]]);
     var line = new THREE.Line(geometry, material);
     scene.add(line);
   }
+  document.getElementById('start-drawing-btn').innerHTML = drawingEnabled ? 'Stop Drawing' : 'Start Drawing';
 });
 
+
 document.getElementById('submit-wall-height').addEventListener('click', () => {
+  drawingEnabled = false;
+  document.getElementById('start-drawing-btn').innerHTML = drawingEnabled ? 'Stop Drawing' : 'Start Drawing';
   let wallHeight = document.getElementById('wall-height').value;
   shape = new THREE.Shape();
   controlPoints.forEach((point, index) => {
