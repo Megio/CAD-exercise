@@ -1,0 +1,23 @@
+#start-drawing-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  height: 40px;
+  width: 200px;
+  z-index: 1;
+}
+
+button {
+  outline: none;
+}
+
+p {
+  position: absolute;
+  top: 20px;
+  left: 50vw;
+  height: 40px;
+  width: 100%;
+  color: black;
+  font-size: large;
+  z-index: 1;
+}
