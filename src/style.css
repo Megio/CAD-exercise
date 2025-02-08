@@ -9,6 +9,10 @@
 
 button {
   outline: none;
+  border-radius: 10px;
+  border: 1px solid blue;
+  background-color: #4A9FDF;
+  cursor: pointer;
 }
 
 p {
@@ -17,7 +21,7 @@ p {
   left: 50vw;
   height: 40px;
   width: 100%;
-  color: black;
+  color: red;
   font-size: large;
   z-index: 1;
 }
@@ -25,10 +29,12 @@ p {
 #wall-height {
   position: absolute;
   top: 20px;
-  right: 110px;
+  right: 220px;
   height: 40px;
   width: 200px;
+  padding: 0 24px;
   outline: none;
+  border-radius: 10px;
 }
 
 #submit-wall-height {
@@ -36,5 +42,5 @@ p {
   top: 20px;
   right: 10px;
   height: 46px;
-  width: 100px;
+  width: 200px;
 }

@@ -11,10 +11,10 @@ var renderer = new THREE.WebGLRenderer({
   antialias: true
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x999999);
+renderer.setClearColor('lightblue');
 document.body.appendChild(renderer.domElement);
 
-var controls = new OrbitControls(camera, renderer.domElement);
+new OrbitControls(camera, renderer.domElement);
 
 document.addEventListener("mousedown", onMouseDown, false);
 
@@ -32,6 +32,7 @@ const height = 720;
 const url = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${longitude - 0.001},${latitude - 0.001},${longitude + 0.001},${latitude + 0.001}&bboxSR=4326&layers=&layerDefs=&size=${width}%2C${height}&imageSR=&format=jpg&transparent=false&dpi=&time=&layerTimeOptions=&dynamicLayers=&gdbVersion=&mapScale=&rotation=&f=image`;
 const textureLoader = new THREE.TextureLoader();
 const texture = textureLoader.load(url);
+
 var planeGeom = new THREE.PlaneGeometry(32, 18);
 planeGeom.rotateX(-Math.PI / 2);
 var plane = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial({
@@ -45,7 +46,7 @@ var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 var intersects;
 var controlPoints = [];
-var pos = new THREE.Vector3();
+// var pos = new THREE.Vector3();
 var clickCount = 0;
 
 function onMouseDown(event) {
@@ -57,11 +58,12 @@ function onMouseDown(event) {
     if (intersects.length > 0) {
       console.log(controlPoints)
       controlPoints[clickCount] = intersects[0].point.clone();
-      var cp = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 12), new THREE.MeshBasicMaterial({ color: "red" }));
+      var cp = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 12), new THREE.MeshBasicMaterial({ color: "tomato" }));
       cp.position.copy(intersects[0].point);
+      console.log(cp)
       scene.add(cp);
       if (clickCount >= 1) {
-        var material = new THREE.LineBasicMaterial({ color: 'red', linewidth: 100 });
+        var material = new THREE.LineBasicMaterial({ color: 'tomato', linewidth: 100 });
         var geometry = new THREE.BufferGeometry();
         geometry.setFromPoints([controlPoints[clickCount - 1], controlPoints[clickCount]]);
         var line = new THREE.Line(geometry, material);
@@ -112,9 +114,10 @@ document.getElementById('submit-wall-height').addEventListener('click', () => {
   });
   shape.lineTo(controlPoints[0].x, -controlPoints[0].z);
   var extrudeSettings = {
-    steps: 0,
     depth: wallHeight / 100,
     bevelSize: 0,
+    bevelThickness: 0,
+    bevelOffset: 0
   };
   var extrudeGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
   extrudeGeom.rotateX(-Math.PI / 2);
