@@ -14,6 +14,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor('lightgray');
 document.body.appendChild(renderer.domElement);
 
+// Allow user to move camera with mouse
 new OrbitControls(camera, renderer.domElement);
 
 document.addEventListener("mousedown", onMouseDown, false);
@@ -24,17 +25,21 @@ scene.add(light);
 
 var objects = [];
 
+//Sets the lat and long of the maps I retrieve in arcgisonline server free API
 const longitude = 12.642305;
 const latitude = 41.575473;
 const width = 1280;
 const height = 720;
 
+//Here I used a PROMPT and asked for how to use arcgisonline server free API for retrieving a map image
 const url = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${longitude - 0.001},${latitude - 0.001},${longitude + 0.001},${latitude + 0.001}&bboxSR=4326&layers=&layerDefs=&size=${width}%2C${height}&imageSR=&format=jpg&transparent=false&dpi=&time=&layerTimeOptions=&dynamicLayers=&gdbVersion=&mapScale=&rotation=&f=image`;
 const textureLoader = new THREE.TextureLoader();
 const texture = textureLoader.load(url);
 
+//Here I used a PROMT and asked for setting me up a "standard" Three.js scene with a plane geometru on it
 var planeGeom = new THREE.PlaneGeometry(32, 18);
 planeGeom.rotateX(-Math.PI / 2);
+//Put the map image as background on the plane geometry
 var plane = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial({
   map: texture,
   side: THREE.DoubleSide,
@@ -52,6 +57,7 @@ function onMouseDown(event) {
   if (drawingEnabled) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    //Raycaster allow me to see if the point I clicked with my mouse intersects the plane with the map. If yes, I wanna draw my point, otherwise I don't want to draw anything.
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects(objects);
     if (intersects.length > 0) {
@@ -60,6 +66,7 @@ function onMouseDown(event) {
       cp.position.copy(intersects[0].point);
       cp.name = `cp_${clickCount}`;
       scene.add(cp);
+      //From the second point created on, I need also to draw a line between two consecutive points
       if (clickCount >= 1) {
         var material = new THREE.LineBasicMaterial({ color: 'tomato', linewidth: 100 });
         var geometry = new THREE.BufferGeometry();
@@ -80,8 +87,10 @@ function render() {
   renderer.render(scene, camera);
 }
 
+//Handle the start drawing button click
 document.getElementById('start-drawing-btn').addEventListener('click', () => {
   drawingEnabled = !drawingEnabled;
+  //Create the latest line that close the polygon in order to be sure that the polygon cannot be left open
   if (!drawingEnabled && controlPoints.length > 2) {
     var material = new THREE.LineBasicMaterial({ color: 'red', linewidth: 100 });
     var geometry = new THREE.BufferGeometry();
@@ -93,9 +102,11 @@ document.getElementById('start-drawing-btn').addEventListener('click', () => {
   document.getElementById('start-drawing-btn').innerHTML = drawingEnabled ? 'Stop Drawing' : 'Start Drawing';
 });
 
-
+//Handle the submit wall height button click
 document.getElementById('submit-wall-height').addEventListener('click', () => {
   drawingEnabled = false;
+  //I need to draw a shape of the polygon I draw with points and line, and with the ExtrudeGeometry object in three.js I can exctract the 
+  //3d solid from the shape I have drawn
   document.getElementById('start-drawing-btn').innerHTML = drawingEnabled ? 'Stop Drawing' : 'Start Drawing';
   let wallHeight = document.getElementById('wall-height').value;
   shape = new THREE.Shape();
@@ -107,6 +118,7 @@ document.getElementById('submit-wall-height').addEventListener('click', () => {
     }
   });
   shape.lineTo(controlPoints[0].x, -controlPoints[0].z);
+  //Not clear what is the measurement unit here, so I divided by 100 the depth in order to have something UX acceptable
   var extrudeSettings = {
     depth: wallHeight / 100,
     bevelSize: 0,
@@ -129,6 +141,7 @@ document.getElementById('submit-wall-height').addEventListener('click', () => {
   clickCount = 0;
 });
 
+//Handle the remove function. I need to add name to each object in order to be able to select them and delete them without the risk of deleting something I don't want to
 document.getElementById('reset').addEventListener('click', () => {
   if (controlPoints.length > 0) {
     controlPoints.forEach((_, i) => {
@@ -139,7 +152,6 @@ document.getElementById('reset').addEventListener('click', () => {
   }
   scene.remove(scene.getObjectByName('wall'));
   document.getElementById('wall-height').value = 0;
-  // Clear control points and reset click count
   controlPoints = [];
   clickCount = 0;
 });
