@@ -53,6 +53,22 @@ var intersects;
 var controlPoints = [];
 var clickCount = 0;
 
+function addPoint() {
+  var cp = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 12), new THREE.MeshBasicMaterial({ color: "tomato" }));
+  cp.position.copy(intersects[0].point);
+  cp.name = `cp_${clickCount}`;
+  scene.add(cp);
+}
+
+function drawLine(autoClose) {
+  var material = new THREE.LineBasicMaterial({ color: 'tomato', linewidth: 100 });
+  var geometry = new THREE.BufferGeometry();
+  geometry.setFromPoints([controlPoints[clickCount - 1], controlPoints[autoClose ? 0 : clickCount]]);
+  var line = new THREE.Line(geometry, material);
+  line.name = autoClose ? `auto_closed_line` : `line_${clickCount}`;
+  scene.add(line);
+}
+
 function onMouseDown(event) {
   if (drawingEnabled) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -62,23 +78,35 @@ function onMouseDown(event) {
     intersects = raycaster.intersectObjects(objects);
     if (intersects.length > 0) {
       controlPoints[clickCount] = intersects[0].point.clone();
-      var cp = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 12), new THREE.MeshBasicMaterial({ color: "tomato" }));
-      cp.position.copy(intersects[0].point);
-      cp.name = `cp_${clickCount}`;
-      scene.add(cp);
+      if (clickCount === 0) {
+        addPoint();
+      }
       //From the second point created on, I need also to draw a line between two consecutive points
-      if (clickCount >= 1) {
-        var material = new THREE.LineBasicMaterial({ color: 'tomato', linewidth: 100 });
-        var geometry = new THREE.BufferGeometry();
-        geometry.setFromPoints([controlPoints[clickCount - 1], controlPoints[clickCount]]);
-        var line = new THREE.Line(geometry, material);
-        line.name = `line_${clickCount}`;
-        scene.add(line);
+      if (clickCount === 1) {
+        addPoint();
+        drawLine();
+      }
+      if (clickCount >= 2) {
+        //If the new point is really close to the first one it means that probably the user is trying to close the polygon. So I don't want an extra point, but
+        //I wanna close the polygon with a line from the last point to the first one. We can decide how close the points could be 2 different points.
+        if (Math.abs(controlPoints[clickCount].x - controlPoints[0].x) < 0.5 && Math.abs(controlPoints[clickCount].z - controlPoints[0].z) < 0.5) {
+          drawLine(true);
+          controlPoints = controlPoints.splice(0, controlPoints.length - 1)
+          drawingEnabled = false;
+          changeButtonLabel();
+        } else {
+          addPoint();
+          drawLine();
+        }
       }
       clickCount++;
     };
   }
 };
+
+function changeButtonLabel() {
+  document.getElementById('start-drawing-btn').innerHTML = drawingEnabled ? 'Stop Drawing' : 'Start Drawing';
+}
 
 render();
 
@@ -99,7 +127,7 @@ document.getElementById('start-drawing-btn').addEventListener('click', () => {
     line.name = `extra_line`;
     scene.add(line);
   }
-  document.getElementById('start-drawing-btn').innerHTML = drawingEnabled ? 'Stop Drawing' : 'Start Drawing';
+  changeButtonLabel();
 });
 
 //Handle the submit wall height button click
@@ -107,7 +135,7 @@ document.getElementById('submit-wall-height').addEventListener('click', () => {
   drawingEnabled = false;
   //I need to draw a shape of the polygon I draw with points and line, and with the ExtrudeGeometry object in three.js I can exctract the 
   //3d solid from the shape I have drawn
-  document.getElementById('start-drawing-btn').innerHTML = drawingEnabled ? 'Stop Drawing' : 'Start Drawing';
+  changeButtonLabel();
   let wallHeight = document.getElementById('wall-height').value;
   shape = new THREE.Shape();
   controlPoints.forEach((point, index) => {
@@ -136,6 +164,7 @@ document.getElementById('submit-wall-height').addEventListener('click', () => {
     scene.remove(scene.getObjectByName(`line_${i}`));
     scene.remove(scene.getObjectByName(`cp_${i}`));
     scene.remove(scene.getObjectByName(`extra_line`));
+    scene.remove(scene.getObjectByName(`auto_closed_line`));
   });
   controlPoints = [];
   clickCount = 0;
@@ -148,6 +177,7 @@ document.getElementById('reset').addEventListener('click', () => {
       scene.remove(scene.getObjectByName(`line_${i}`));
       scene.remove(scene.getObjectByName(`cp_${i}`));
       scene.remove(scene.getObjectByName(`extra_line`));
+      scene.remove(scene.getObjectByName(`auto_closed_line`));
     });
   }
   scene.remove(scene.getObjectByName('wall'));
