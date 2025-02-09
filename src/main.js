@@ -138,6 +138,7 @@ document.getElementById('reset').addEventListener('click', () => {
     });
   }
   scene.remove(scene.getObjectByName('wall'));
+  document.getElementById('wall-height').value = 0;
   // Clear control points and reset click count
   controlPoints = [];
   clickCount = 0;
