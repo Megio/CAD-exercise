@@ -1,50 +1,47 @@
 #start-drawing-btn {
   position: absolute;
-  bottom: 20px;
-  left: calc(50vw - 200px);
-  height: 80px;
-  width: 400px;
-  font-size: 40px;
+  top: 20px;
+  left: 20px;
+  height: 40px;
+  width: 200px;
+  font-size: 12px;
   z-index: 1;
 }
 
 button {
   outline: none;
   border-radius: 10px;
-  border: 1px solid blue;
-  background-color: #4A9FDF;
+  border: 1px solid black;
   cursor: pointer;
-}
-
-p {
-  position: absolute;
-  top: 20px;
-  left: 50vw;
-  height: 40px;
-  width: 100%;
-  color: red;
-  font-size: large;
-  z-index: 1;
 }
 
 #wall-height {
   position: absolute;
-  top: 20px;
-  left: calc(50vw - 200px);
-  height: 80px;
-  width: 400px;
-  padding: 0 24px;
+  top: 70px;
+  left: 20px;
+  height: 40px;
+  width: 120px;
+  padding: 0 8px;
   outline: none;
   box-sizing: border-box;
-  font-size: 40px;
+  font-size: 12px;
   border-radius: 10px;
 }
 
 #submit-wall-height {
   position: absolute;
+  top: 70px;
+  left: 148px;
+  height: 40px;
+  width: 100px;
+  font-size: 12px;
+}
+
+#reset {
+  position: absolute;
   top: 120px;
-  left: calc(50vw - 200px);
-  height: 80px;
-  width: 400px;
-  font-size: 40px;
+  left: 20px;
+  height: 40px;
+  width: 200px;
+  font-size: 12px;
 }

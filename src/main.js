@@ -11,7 +11,7 @@ var renderer = new THREE.WebGLRenderer({
   antialias: true
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor('lightblue');
+renderer.setClearColor('lightgray');
 document.body.appendChild(renderer.domElement);
 
 new OrbitControls(camera, renderer.domElement);
@@ -24,8 +24,8 @@ scene.add(light);
 
 var objects = [];
 
-const longitude = -73.9654;
-const latitude = 40.7829;
+const longitude = 12.642305;
+const latitude = 41.575473;
 const width = 1280;
 const height = 720;
 
@@ -46,7 +46,6 @@ var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 var intersects;
 var controlPoints = [];
-// var pos = new THREE.Vector3();
 var clickCount = 0;
 
 function onMouseDown(event) {
@@ -59,12 +58,14 @@ function onMouseDown(event) {
       controlPoints[clickCount] = intersects[0].point.clone();
       var cp = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 12), new THREE.MeshBasicMaterial({ color: "tomato" }));
       cp.position.copy(intersects[0].point);
+      cp.name = `cp_${clickCount}`;
       scene.add(cp);
       if (clickCount >= 1) {
         var material = new THREE.LineBasicMaterial({ color: 'tomato', linewidth: 100 });
         var geometry = new THREE.BufferGeometry();
         geometry.setFromPoints([controlPoints[clickCount - 1], controlPoints[clickCount]]);
         var line = new THREE.Line(geometry, material);
+        line.name = `line_${clickCount}`;
         scene.add(line);
       }
       clickCount++;
@@ -86,6 +87,7 @@ document.getElementById('start-drawing-btn').addEventListener('click', () => {
     var geometry = new THREE.BufferGeometry();
     geometry.setFromPoints([controlPoints[clickCount - 1], controlPoints[0]]);
     var line = new THREE.Line(geometry, material);
+    line.name = `extra_line`;
     scene.add(line);
   }
   document.getElementById('start-drawing-btn').innerHTML = drawingEnabled ? 'Stop Drawing' : 'Start Drawing';
@@ -116,8 +118,27 @@ document.getElementById('submit-wall-height').addEventListener('click', () => {
   var wall = new THREE.Mesh(extrudeGeom, new THREE.MeshStandardMaterial({
     color: "blue"
   }));
+  wall.name = 'wall';
   scene.add(wall);
+  controlPoints.forEach((_, i) => {
+    scene.remove(scene.getObjectByName(`line_${i}`));
+    scene.remove(scene.getObjectByName(`cp_${i}`));
+    scene.remove(scene.getObjectByName(`extra_line`));
+  });
   controlPoints = [];
   clickCount = 0;
 });
 
+document.getElementById('reset').addEventListener('click', () => {
+  if (controlPoints.length > 0) {
+    controlPoints.forEach((_, i) => {
+      scene.remove(scene.getObjectByName(`line_${i}`));
+      scene.remove(scene.getObjectByName(`cp_${i}`));
+      scene.remove(scene.getObjectByName(`extra_line`));
+    });
+  }
+  scene.remove(scene.getObjectByName('wall'));
+  // Clear control points and reset click count
+  controlPoints = [];
+  clickCount = 0;
+});
