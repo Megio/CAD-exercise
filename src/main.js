@@ -31,8 +31,9 @@ const latitude = 41.575473;
 const width = 1280;
 const height = 720;
 
-//I could use also a fetch and make an API call to retrieve the map image in this way:
 /*
+I could use also a fetch and make an API call to retrieve the map image in this way:
+
 fetch(mapUrl)
   .then(response => response.blob())
   .then(blob => {
@@ -40,7 +41,7 @@ fetch(mapUrl)
     // Use the imageUrl in an img tag or however you need
   })
   .catch(error => console.error('Error fetching map:', error));
-  */
+*/
 
 //Here I used a PROMPT and asked for how to use arcgisonline server free API for retrieving a map image
 const url = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${longitude - 0.001},${latitude - 0.001},${longitude + 0.001},${latitude + 0.001}&bboxSR=4326&layers=&layerDefs=&size=${width}%2C${height}&imageSR=&format=jpg&transparent=false&dpi=&time=&layerTimeOptions=&dynamicLayers=&gdbVersion=&mapScale=&rotation=&f=image`;
